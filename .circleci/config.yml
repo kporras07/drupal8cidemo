@@ -23,6 +23,8 @@ jobs:
       - run:
           name: Npm and composer install
           command: |
+            ln -s .nvm/versions/node/v6.10.1/bin/npm /usr/local/bin/npm
+            ln -s .nvm/versions/node/v6.10.1/bin/node /usr/local/bin/node
             npm install
             composer install
       - save_cache:
