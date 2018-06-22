@@ -13,18 +13,26 @@ jobs:
           MYSQL_ROOT_PASSWORD: drupal
     working_directory: /var/www/drupal8cidemo
     steps:
-      - run: apt-get update -y && apt-get install python -y
+      - run: apt-get update -y
       - run: echo 127.0.0.1 drupal8cidemo.dev | tee -a /etc/hosts
       - checkout
       - restore_cache:
           keys:
-            - npm-cache-{{ checksum "package.json" }}
+            - npm-cache-{{ checksum "package-lock.json" }}
             - composer-cache-{{ checksum "composer.lock" }}
-      - run: npm install
+      - run:
+          name: Npm and composer install
+          command: |
+            npm install
+            composer install
       - save_cache:
-         key: npm-cache-{{ checksum "package.json" }}
-         paths:
-           - node_modules
+          key: npm-cache-{{ checksum "package-lock.json" }}
+          paths:
+            - node_modules
+      - save_cache:
+          key: composer-cache-{{ checksum "composer.lock" }}
+          paths:
+            - vendor
       - run:
           name: Configure Nginx
           command: |
@@ -33,7 +41,6 @@ jobs:
           name: Build site.
           command: |
             cp ./.circleci/settings.secret.php ./settings/
-            composer install
             chmod 777 -R ./web/sites/default/files
             cd web
             if [ -f /var/www/drupal8cidemo/config/sync/core.extension.yml ] ; then echo 'Install with config' ; /usr/bin/env PHP_OPTIONS="-d sendmail_path=`which true`" ../vendor/bin/drush si drupal8cidemo -y ; ../vendor/bin/drush config-set "system.site" uuid $SITE_UUID -y ; ../vendor/bin/drush cim -y ; else echo 'Install without config' ; /usr/bin/env PHP_OPTIONS="-d sendmail_path=`which true`" ../vendor/bin/drush si drupal8cidemo -y ; fi
