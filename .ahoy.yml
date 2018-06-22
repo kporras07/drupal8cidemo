@@ -20,6 +20,10 @@ commands:
     cmd: docker-compose run cli drush --root=/var/www/html/web "$@"
     usage: Run drush commands in the cli service container.
 
+  robo:
+    cmd: docker-compose run cli robo "$@"
+    usage: Run robo commands in the cli service container.
+
   bash:
     cmd: docker-compose run cli bash
     usage: Start a shell in the container (like ssh without actual ssh).
