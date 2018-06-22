@@ -1,0 +1,11 @@
+<?php
+/**
+ * @file
+ * Install, update and uninstall functions for drupal8cidemo profile.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function drupal8cidemo_install() {
+}
