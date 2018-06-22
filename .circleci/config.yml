@@ -2,9 +2,12 @@ version: 2
 jobs:
   build:
     docker:
-      - image: tbfisher/drupal-nginx:php-7.1.x
+      - image: kporras07/docker-drupal-cli:v0.10.7
+      - image: nginx:alpine
+      - image: kporras07/docker-php:latest
+      - image: mailhog/mailhog:v1.0.0
       - image: selenium/standalone-chrome-debug:3.6.0
-      - image: mariadb:5.5
+      - image: mariadb:10.3
         environment:
           MYSQL_DATABASE: drupal
           MYSQL_ROOT_PASSWORD: drupal
@@ -17,28 +20,11 @@ jobs:
           keys:
             - npm-cache-{{ checksum "package.json" }}
             - composer-cache-{{ checksum "composer.lock" }}
-      - run:
-          name: Install Node 6
-          command: |
-            curl "https://deb.nodesource.com/setup_6.x" -o "setup_6.x"
-            chmod +x setup_6.x
-            ./setup_6.x
-            rm setup_6.x
-            apt-get install nodejs -y
       - run: npm install
       - save_cache:
          key: npm-cache-{{ checksum "package.json" }}
          paths:
            - node_modules
-      - run:
-          name: Install Composer
-          command: |
-            php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
-            php -r "copy('https://composer.github.io/installer.sig', 'composer-setup.sig');" && \
-            php -r "if (hash_file('SHA384', 'composer-setup.php') === trim(file_get_contents('composer-setup.sig'))) { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" && \
-            php composer-setup.php && \
-            php -r "unlink('composer-setup.php');"
-            mv composer.phar /usr/bin/composer
       - run:
           name: Configure Nginx
           command: |
