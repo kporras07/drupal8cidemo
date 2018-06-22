@@ -63,7 +63,7 @@ services:
       - humpback_proxy
 
   cli:
-    image: kporras07/docker-drupal-cli:v0.10.6
+    image: kporras07/docker-drupal-cli:latest
     links:
       - php
       - nginx
